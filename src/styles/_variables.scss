@@ -1,3 +1,5 @@
+@use 'sass:map';
+
 // Colors Map
 $colors: (
   'primary': #123456,
@@ -19,26 +21,26 @@ $colors: (
 $gradients: (
   'botoes': linear-gradient(
       180deg,
-      map-get($colors, 'lils') 0%,
-      map-get($colors, 'azul-royal') 100%
+      map.get($colors, 'lils') 0%,
+      map.get($colors, 'azul-royal') 100%
     ),
   'foco': linear-gradient(
       180deg,
       #8b1ff8 0%,
       #041832 48.44%,
-      map-get($colors, 'azul-profundo') 100%
+      map.get($colors, 'azul-profundo') 100%
     ),
   'descanso-curto': linear-gradient(
       180deg,
       #0f725c 0%,
       #041832 48.44%,
-      map-get($colors, 'azul-profundo') 100%
+      map.get($colors, 'azul-profundo') 100%
     ),
   'descanso-longo': linear-gradient(
       180deg,
       #1875e9 0%,
       #041832 48.44%,
-      map-get($colors, 'azul-profundo') 100%
+      map.get($colors, 'azul-profundo') 100%
     ),
   'toggle-button': linear-gradient(to bottom, #fff 0%, #eee 100%),
   'toggle-button-hover': linear-gradient(to bottom, #fff 0%, #fff 100%),
@@ -93,27 +95,27 @@ $z-index: (
 
 // Functions to access maps
 @function color($key) {
-  @return map-get($colors, $key);
+  @return map.get($colors, $key);
 }
 
 @function gradient($key) {
-  @return map-get($gradients, $key);
+  @return map.get($gradients, $key);
 }
 
 @function spacing($key) {
-  @return map-get($spacing, $key);
+  @return map.get($spacing, $key);
 }
 
 @function font($key) {
-  @return map-get($fonts, $key);
+  @return map.get($fonts, $key);
 }
 
 @function radius($key) {
-  @return map-get($border-radius, $key);
+  @return map.get($border-radius, $key);
 }
 
 @function fontSize($key) {
-  @return map-get($font-sizes, $key);
+  @return map.get($font-sizes, $key);
 }
 
 // Common Mixins
@@ -130,7 +132,7 @@ $z-index: (
 }
 
 @mixin responsive($breakpoint) {
-  @media screen and (max-width: map-get($breakpoints, $breakpoint)) {
+  @media screen and (max-width: map.get($breakpoints, $breakpoint)) {
     @content;
   }
 }
