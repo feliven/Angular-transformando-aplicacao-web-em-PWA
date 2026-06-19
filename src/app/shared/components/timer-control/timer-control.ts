@@ -13,9 +13,15 @@ export class TimerControl {
   private contextService = inject(ContextService);
   private audioService = inject(AudioService);
 
-  timerFormat = signal('');
   isTimerStarted = signal(false);
   timerInSeconds = signal(30);
+  timerFormat = computed(() => {
+    return new Date(this.timerInSeconds() * 1000).toLocaleTimeString('pt-Br', {
+      minute: '2-digit',
+      second: '2-digit',
+      timeZone: 'UTC',
+    });
+  });
   hasPlaySong = signal(false);
 
   private intervalId: any;
@@ -29,7 +35,6 @@ export class TimerControl {
   constructor() {
     effect(() => {
       this.setTimerSecond();
-      this.configTimer();
     });
   }
 
@@ -73,7 +78,6 @@ export class TimerControl {
 
       this.resetTimer();
       this.setTimerSecond();
-      this.configTimer();
 
       return;
     }
@@ -81,21 +85,11 @@ export class TimerControl {
     this.timerInSeconds.update((value) => {
       return value - 1;
     });
-    this.configTimer();
   }
 
   private resetTimer(): void {
     this.isTimerStarted.set(false);
     clearInterval(this.intervalId);
-  }
-
-  private configTimer(): void {
-    this.timerFormat.set(
-      new Date(this.timerInSeconds() * 1000).toLocaleTimeString('pt-Br', {
-        minute: '2-digit',
-        second: '2-digit',
-      }),
-    );
   }
 
   private setTimerSecond(): void {
