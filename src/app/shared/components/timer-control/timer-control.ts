@@ -2,6 +2,7 @@ import { Component, computed, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AudioService } from '../../services/audio.service';
 import { ContextService, type ContextType } from '../../services/context.service';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-timer-control',
@@ -12,6 +13,7 @@ import { ContextService, type ContextType } from '../../services/context.service
 export class TimerControl {
   private contextService = inject(ContextService);
   private audioService = inject(AudioService);
+  private notificationService = inject(NotificationService);
 
   isTimerStarted = signal(false);
   timerInSeconds = signal(30);
@@ -77,6 +79,8 @@ export class TimerControl {
       this.resetTimer();
       this.setTimerSecond();
 
+      this.sendNotification();
+
       return;
     }
 
@@ -101,6 +105,36 @@ export class TimerControl {
       case 'descanso-longo':
         this.timerInSeconds.set(15);
         break;
+    }
+  }
+
+  private async sendNotification(): Promise<void> {
+    try {
+      await this.notificationService.requestPermission();
+
+      const context = this.context();
+
+      if (context.includes('descanso')) {
+        this.notificationService.showNotification('Aviso', {
+          body: 'Tempo de descanso finalizado!',
+        });
+
+        return;
+      } else if (context === 'foco') {
+        this.notificationService.showNotification('Aviso', {
+          body: 'Tempo de foco finalizado!',
+        });
+
+        return;
+      } else {
+        this.notificationService.showNotification('Aviso', {
+          body: 'Tempo finalizado!',
+        });
+
+        return;
+      }
+    } catch (error) {
+      console.error('Erro ao enviar notificação', error);
     }
   }
 }
