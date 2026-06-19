@@ -1,4 +1,4 @@
-@use 'variables' as *;
+@use '../../../../styles/variables' as *;
 
 .app {
   &__section-task {
@@ -207,5 +207,45 @@
     font-style: normal;
     font-weight: 600;
     line-height: 150%;
+  }
+
+  &__section-task-header {
+    position: relative;
+
+    &__ul {
+      display: none;
+      position: absolute;
+      z-index: z-index('dropdown');
+      top: 100%;
+      top: 0;
+      right: 0;
+      min-width: 24rem;
+      padding: spacing('md');
+      transform: translateY(-10%);
+
+      &:hover,
+      .app_button-more:hover ~ & {
+        display: block;
+        text-align: right;
+        border-radius: radius('sm');
+        border: spacing('xs') solid color('azul-royal');
+        background: color('fundo-modal');
+      }
+    }
+
+    &__li {
+      margin: spacing('md') 0;
+
+      &__button {
+        width: 100%;
+        @include button-base;
+        background-color: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        color: color('secondary');
+        gap: spacing('sm');
+      }
+    }
   }
 }

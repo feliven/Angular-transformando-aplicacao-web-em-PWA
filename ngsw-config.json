@@ -21,7 +21,7 @@
       "installMode": "lazy",
       "updateMode": "prefetch",
       "resources": {
-        "files": ["/assets/images/*.(jps|jpeg|png|webp|avif)", "/assets/sounds/*.(mp3|wav)"]
+        "files": ["/images/*.(jps|jpeg|png|webp|avif)", "/sounds/*.(mp3|wav)"]
       }
     }
   ],

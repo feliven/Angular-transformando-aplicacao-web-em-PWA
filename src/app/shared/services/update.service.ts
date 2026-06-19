@@ -15,7 +15,7 @@ export class UpdateService {
       return;
     }
 
-    interval(60 * 1000).subscribe(() => {
+    interval(15000).subscribe(() => {
       this.checkForUpdate();
     });
 

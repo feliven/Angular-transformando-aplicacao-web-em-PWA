@@ -13,28 +13,28 @@ export class AudioService {
     this.audioTracks.set(
       'environment',
       new Howl({
-        src: ['./assets/sounds/luna-rise-part-one.mp3'],
+        src: ['./sounds/luna-rise-part-one.mp3'],
       }),
     );
 
     this.audioTracks.set(
       'play',
       new Howl({
-        src: ['./assets/sounds/play.wav'],
+        src: ['./sounds/play.wav'],
       }),
     );
 
     this.audioTracks.set(
       'pause',
       new Howl({
-        src: ['./assets/sounds/pause.mp3'],
+        src: ['./sounds/pause.mp3'],
       }),
     );
 
     this.audioTracks.set(
       'beep',
       new Howl({
-        src: ['./assets/sounds/beep.mp3'],
+        src: ['./sounds/beep.mp3'],
       }),
     );
   }

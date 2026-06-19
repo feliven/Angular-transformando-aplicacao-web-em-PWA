@@ -2,38 +2,65 @@
   <div class="app__card">
     <ul class="app__card-list">
       <li class="app__card-list-item">
-        <button data-contexto="foco" class="app__card-button app__card-button--foco active">
+        <button
+          data-contexto="foco"
+          class="app__card-button app__card-button--foco"
+          [class.active]="isFocoActive()"
+          (click)="onChangeContext('foco')"
+        >
           Foco
         </button>
       </li>
       <li class="app__card-list-item">
-        <button data-contexto="short" class="app__card-button app__card-button--curto">
+        <button
+          data-contexto="short"
+          class="app__card-button app__card-button--curto"
+          [class.active]="isDescansoCurtoActive()"
+          (click)="onChangeContext('descanso-curto')"
+        >
           Descanso curto
         </button>
       </li>
       <li class="app__card-list-item">
-        <button data-contexto="long" class="app__card-button app__card-button--longo">
+        <button
+          data-contexto="long"
+          class="app__card-button app__card-button--longo"
+          [class.active]="isDescansoLongoActive()"
+          (click)="onChangeContext('descanso-longo')"
+        >
           Descanso longo
         </button>
       </li>
     </ul>
-    <div id="timer" class="app__card-timer"></div>
+    <div class="app__card-timer">{{ timerFormat() }}</div>
     <ul class="app__card-list">
       <li class="app__card-list-item">
         <label class="toggle">
-          <input class="toggle-checkbox" type="checkbox" id="alternar-musica" />
+          <input
+            class="toggle-checkbox"
+            [checked]="hasPlaySong()"
+            type="checkbox"
+            (change)="onToggleMusicClick()"
+          />
           <div class="toggle-switch"></div>
         </label>
       </li>
       <li class="app__card-list-item">
-        <label class="app__card-list-label" for="alternar-musica"> Música </label>
+        <label class="app__card-list-label"> Música </label>
       </li>
     </ul>
     <div class="app__card-primary-button-wrapper">
-      <button id="start-pause" class="app__card-primary-button">
-        <img class="app__card-primary-butto-icon" src="images/play_arrow.png" alt="" />
-        <span>Começar</span>
-      </button>
+      @if (!isTimerStarted()) {
+        <button class="app__card-primary-button" (click)="onStartClick()">
+          <img class="app__card-primary-butto-icon" src="./images/play_arrow.png" alt="" />
+          <span>Começar</span>
+        </button>
+      } @else {
+        <button class="app__card-primary-button" (click)="onPauseClick()">
+          <img class="app__card-primary-butto-icon" src="./images/pause.png" alt="" />
+          <span>Pausa</span>
+        </button>
+      }
     </div>
   </div>
 </section>
