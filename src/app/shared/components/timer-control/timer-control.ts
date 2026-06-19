@@ -59,15 +59,13 @@ export class TimerControl {
   }
 
   onToggleMusicClick(): void {
-    if (this.hasPlaySong()) {
-      this.audioService.play('environment');
-      return;
-    }
-
-    this.audioService.stop('environment');
     this.hasPlaySong.update((value) => {
       const newValue = !value;
-      newValue ? this.audioService.play('environment') : this.audioService.stop('environment');
+      if (newValue) {
+        this.audioService.play('environment');
+      } else {
+        this.audioService.pause('environment');
+      }
       return newValue;
     });
   }
