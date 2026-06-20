@@ -13,6 +13,34 @@ const PUBLIC_KEY =
 
 webPush.setVapidDetails('mailto:feliven@gmail.com', PUBLIC_KEY, process.env.PRIVATE_KEY);
 
+const subscriptions = [];
+
+app.post('/subscribe', (req, res, next) => {
+  const subscription = req.body;
+
+  subscriptions.push(subscription);
+
+  res.status(201).json({});
+});
+
+app.post('/send-notification', async (req, res, next) => {
+  const { title, body } = req.body;
+
+  const notifications = subscriptions.map((sub) => {
+    return webPush.sendNotification(sub, JSON.stringify({ title, body }));
+  });
+
+  try {
+    await Promise.all(notifications);
+
+    res.status(200).json({ message: 'Notificações enviadas com sucesso' });
+  } catch (error) {
+    const errorMsg = 'Erro ao enviar notificações';
+    console.error(errorMsg, error);
+    res.status(500).json({ error: errorMsg });
+  }
+});
+
 app.listen(3000, () => {
   console.log('Servidor rodando na porta 3000');
 });
