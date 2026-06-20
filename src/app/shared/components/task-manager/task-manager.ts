@@ -3,6 +3,7 @@ import { ReactiveFormsModule, Validators, FormBuilder, type FormGroup } from '@a
 import { v4 as uuidv4 } from 'uuid';
 import type { TaskItem } from './ITaskItem';
 import { TaskList } from './task-list/task-list';
+import { IndexedDBService } from '../../services/indexed-db.service';
 
 @Component({
   selector: 'app-task-manager',
@@ -17,6 +18,7 @@ export class TaskManager {
   tasks: TaskItem[] = [];
   taskItemSelected: TaskItem | null = null;
   private fb = inject(FormBuilder);
+  private indexedDBService = inject(IndexedDBService);
 
   constructor() {
     this.taskForm = this.fb.group({
@@ -48,6 +50,8 @@ export class TaskManager {
     };
 
     this.tasks.push(taskItem);
+
+    this.indexedDBService.addTask(taskItem).subscribe();
 
     this.hasShowForm = false;
   }

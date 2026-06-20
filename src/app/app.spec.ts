@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { App } from './app';
 import { ServiceWorkerModule } from '@angular/service-worker';
+import 'fake-indexeddb/auto';
 
 describe('App', () => {
   beforeEach(async () => {

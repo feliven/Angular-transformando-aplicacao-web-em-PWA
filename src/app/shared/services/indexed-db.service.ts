@@ -1,6 +1,7 @@
 import { isPlatformBrowser } from '@angular/common';
 import { inject, PLATFORM_ID, Service } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, filter, Observable, switchMap, take } from 'rxjs';
+import type { TaskItem } from '../components/task-manager/ITaskItem';
 
 @Service()
 export class IndexedDBService {
@@ -28,13 +29,58 @@ export class IndexedDBService {
           keyPath: this.store.key,
         });
       }
-
-      request.onsuccess = (event) => {
-        const openRequest = event.target as IDBOpenDBRequest;
-        const db = openRequest.result;
-        this.db$.next(db);
-        this.dbReady$.next(true);
-      };
     };
+
+    request.onsuccess = (event) => {
+      const openRequest = event.target as IDBOpenDBRequest;
+      const db = openRequest.result;
+      this.db$.next(db);
+      this.dbReady$.next(true);
+    };
+  }
+
+  private waitForDB(): Observable<boolean> {
+    return this.dbReady$.pipe(
+      filter((ready) => {
+        return ready;
+      }),
+      take(1),
+    );
+  }
+
+  private get store$(): IDBObjectStore {
+    if (!this.isBrowser) {
+      throw new Error('IndexedDB está disponível apenas em navegadores');
+    }
+
+    const db = this.db$.getValue();
+    const dbTransaction = db?.transaction(this.store.name, 'readwrite');
+    const objStore = dbTransaction?.objectStore(this.store.name);
+
+    return (
+      objStore ??
+      (() => {
+        throw new Error('DB não foi inicializado');
+      })()
+    );
+  }
+
+  addTask(task: TaskItem): Observable<TaskItem> {
+    return this.waitForDB().pipe(
+      switchMap(() => {
+        return new Observable<TaskItem>((obs) => {
+          const req = this.store$.add(task);
+
+          req.onsuccess = () => {
+            obs.next(task);
+            obs.complete();
+          };
+
+          req.onerror = () => {
+            obs.error('Falha ao adicionar tarefa');
+          };
+        });
+      }),
+    );
   }
 }
