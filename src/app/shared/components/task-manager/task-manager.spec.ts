@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TaskManager } from './task-manager';
+import 'fake-indexeddb/auto';
 
 describe('TaskManager', () => {
   let component: TaskManager;

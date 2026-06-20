@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal, type AfterViewInit } from '@angular/core';
 import { ReactiveFormsModule, Validators, FormBuilder, type FormGroup } from '@angular/forms';
 import { v4 as uuidv4 } from 'uuid';
 import type { TaskItem } from './ITaskItem';
@@ -11,12 +11,12 @@ import { IndexedDBService } from '../../services/indexed-db.service';
   templateUrl: './task-manager.html',
   styleUrl: './task-manager.scss',
 })
-export class TaskManager {
+export class TaskManager implements AfterViewInit {
   taskForm: FormGroup;
-  hasShowForm = false;
+  hasShowForm = signal(false);
 
-  tasks: TaskItem[] = [];
-  taskItemSelected: TaskItem | null = null;
+  tasks = signal<TaskItem[]>([]);
+  taskItemSelected = signal<TaskItem | null>(null);
   private fb = inject(FormBuilder);
   private indexedDBService = inject(IndexedDBService);
 
@@ -26,18 +26,26 @@ export class TaskManager {
     });
   }
 
+  ngAfterViewInit(): void {
+    this.indexedDBService.listAllTasks().subscribe((tasks) => {
+      this.tasks.set(tasks);
+    });
+  }
+
   onAddTaskClick(): void {
-    this.hasShowForm = true;
+    this.hasShowForm.set(true);
     this.taskForm.reset();
   }
 
   onTaskListClick(taskItem: TaskItem): void {
-    this.tasks = this.tasks.map((task: TaskItem) => ({
+    const mapTasks = this.tasks().map((task: TaskItem) => ({
       ...task,
       isActive: task.uuid === taskItem.uuid ? true : false,
     }));
 
-    this.taskItemSelected = taskItem;
+    this.tasks.set(mapTasks);
+
+    this.taskItemSelected.set(taskItem);
   }
 
   onSaveTask(): void {
@@ -49,19 +57,21 @@ export class TaskManager {
       isActive: false,
     };
 
-    this.tasks.push(taskItem);
+    this.tasks.update((tasks) => {
+      return [...tasks, taskItem];
+    });
 
     this.indexedDBService.addTask(taskItem).subscribe();
 
-    this.hasShowForm = false;
+    this.hasShowForm.set(false);
   }
 
   onCleanTasksClick(): void {
-    this.tasks = [];
-    this.taskItemSelected = null;
+    this.tasks.set([]);
+    this.taskItemSelected.set(null);
   }
 
   onCancelBtnClick(): void {
-    this.hasShowForm = false;
+    this.hasShowForm.set(false);
   }
 }

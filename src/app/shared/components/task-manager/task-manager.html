@@ -3,7 +3,7 @@
     <header class="app__section-active-task">
       <p class="app__section-active-task-label">#Em andamento:</p>
       <p class="app__section-active-task-description">
-        {{ taskItemSelected ? taskItemSelected.description : 'Nome da tarefa em andamento' }}
+        {{ taskItemSelected() ? taskItemSelected()?.description : 'Nome da tarefa em andamento' }}
       </p>
     </header>
     <div class="app__section-task-header">
@@ -28,13 +28,13 @@
     </div>
 
     <ul class="app__section-task-list">
-      @for (taskItem of tasks; track $index) {
+      @for (taskItem of tasks(); track taskItem.uuid) {
         <app-task-list [taskItem]="taskItem" (onTaskClick)="onTaskListClick($event)">
         </app-task-list>
       }
     </ul>
 
-    @if (hasShowForm) {
+    @if (hasShowForm()) {
       <form [formGroup]="taskForm" class="app__form-add-task" (ngSubmit)="onSaveTask()">
         <div class="app__form-field">
           <label class="app__form-label"> Adicionando tarefa </label>

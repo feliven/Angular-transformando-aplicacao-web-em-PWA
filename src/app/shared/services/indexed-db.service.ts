@@ -83,4 +83,23 @@ export class IndexedDBService {
       }),
     );
   }
+
+  listAllTasks(): Observable<TaskItem[]> {
+    return this.waitForDB().pipe(
+      switchMap(() => {
+        return new Observable<TaskItem[]>((obs) => {
+          const req = this.store$.getAll();
+
+          req.onsuccess = () => {
+            obs.next(req.result as TaskItem[]);
+            obs.complete();
+          };
+
+          req.onerror = () => {
+            obs.error('Falha ao listar tarefas');
+          };
+        });
+      }),
+    );
+  }
 }
