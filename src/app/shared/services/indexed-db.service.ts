@@ -134,24 +134,9 @@ export class IndexedDBService {
 
                 for (let i = 0; i < results.length; i++) {
                   const element = results[i];
-
-                  if (element && typeof element === 'object') {
-                    // O TypeScript agora sabe que element é um object.
-                    // Usamos o operador `in` para checar as chaves seguramente:
-                    if ('encryptedData' in element && typeof element.encryptedData === 'string') {
-                      try {
-                        const decryptedData = this.decrypt(element.encryptedData) as TaskItem;
-                        tasks.push(decryptedData);
-                      } catch (error) {
-                        console.error('Ignorando tarefa corrompida/antiga:', element);
-                      }
-                    } else if ('uuid' in element && !('encryptedData' in element)) {
-                      // Tarefa antiga salva antes da implementação da criptografia
-
-                      tasks.push(element as TaskItem);
-                    } else {
-                      console.error('Erro desconhecido');
-                    }
+                  const taskItem = this.handleTaskDecryption(element);
+                  if (taskItem) {
+                    tasks.push(taskItem);
                   }
                 }
 
@@ -167,5 +152,26 @@ export class IndexedDBService {
         });
       }),
     );
+  }
+
+  private handleTaskDecryption(element: unknown): TaskItem | undefined {
+    if (element && typeof element === 'object') {
+      // O TypeScript agora sabe que element é um object.
+      // Usamos o operador `in` para checar as chaves seguramente:
+      if ('encryptedData' in element && typeof element.encryptedData === 'string') {
+        try {
+          const decryptedData = this.decrypt(element.encryptedData) as TaskItem;
+          return decryptedData;
+        } catch (error) {
+          console.error('Ignorando tarefa corrompida/antiga:', element);
+        }
+      } else if ('uuid' in element && !('encryptedData' in element)) {
+        // Tarefa antiga salva antes da implementação da criptografia
+        return element as TaskItem;
+      } else {
+        console.error('Erro desconhecido');
+      }
+    }
+    return undefined;
   }
 }
