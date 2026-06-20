@@ -2,7 +2,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { inject, PLATFORM_ID, Service } from '@angular/core';
 import { BehaviorSubject, filter, Observable, switchMap, take } from 'rxjs';
 import { AES, enc } from 'crypto-js';
-import type { TaskItem } from '../types/types';
+import type { EncryptedTaskItem, TaskItem } from '../types/types';
 import { environment } from '../../../environments/environment';
 
 @Service()
@@ -89,7 +89,14 @@ export class IndexedDBService {
     return this.waitForDB().pipe(
       switchMap(() => {
         return new Observable<TaskItem>((obs) => {
-          const req = this.store$.add(task);
+          const encryptedTask: EncryptedTaskItem = {
+            uuid: task.uuid,
+            encryptedData: this.encrypt({ ...task }),
+          };
+
+          console.log({ encryptedTask });
+
+          const req = this.store$.add(encryptedTask);
 
           req.onsuccess = () => {
             obs.next(task);
@@ -111,7 +118,23 @@ export class IndexedDBService {
           const req = this.store$.getAll();
 
           req.onsuccess = () => {
-            obs.next(req.result as TaskItem[]);
+            obs.next(
+              (() => {
+                const results = req.result as EncryptedTaskItem[];
+                const tasks: TaskItem[] = [];
+
+                for (let i = 0; i < results.length; i++) {
+                  const element = results[i];
+                  const decryptedData = this.decrypt(element.encryptedData) as TaskItem;
+
+                  console.log({ decryptedData });
+
+                  tasks.push(decryptedData);
+                }
+
+                return tasks;
+              })(),
+            );
             obs.complete();
           };
 
