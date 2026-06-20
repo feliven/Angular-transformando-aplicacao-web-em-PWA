@@ -3,6 +3,9 @@ import { Service } from '@angular/core';
 @Service()
 export class CacheInspectorService {
   async checkImagesSoundsCache() {
+    if (typeof caches === 'undefined') {
+      return;
+    }
     try {
       const cacheNames = await caches.keys();
 
