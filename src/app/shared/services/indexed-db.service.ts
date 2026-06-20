@@ -51,10 +51,19 @@ export class IndexedDBService {
   }
 
   private decrypt(data: string): unknown {
-    if (this.secretKey) {
-      const bytes = AES.decrypt(data, this.secretKey).toString(enc.Utf8);
+    if (!data) throw new Error('Dados vazios para descriptografia');
 
-      return JSON.parse(bytes);
+    if (this.secretKey) {
+      try {
+        const bytes = AES.decrypt(data, this.secretKey).toString(enc.Utf8);
+        if (!bytes) {
+          throw new Error('Descriptografia retornou vazio; chave pode estar incorreta');
+        }
+        return JSON.parse(bytes);
+      } catch (error) {
+        console.error('Erro na descriptografia:', error);
+        throw new Error('Falha ao descriptografar os dados');
+      }
     }
     throw new Error('Chave secreta vazia ou não encontrada');
   }
@@ -120,16 +129,30 @@ export class IndexedDBService {
           req.onsuccess = () => {
             obs.next(
               (() => {
-                const results = req.result as EncryptedTaskItem[];
+                const results = req.result as unknown[];
                 const tasks: TaskItem[] = [];
 
                 for (let i = 0; i < results.length; i++) {
                   const element = results[i];
-                  const decryptedData = this.decrypt(element.encryptedData) as TaskItem;
 
-                  console.log({ decryptedData });
+                  if (element && typeof element === 'object') {
+                    // O TypeScript agora sabe que element é um object.
+                    // Usamos o operador `in` para checar as chaves seguramente:
+                    if ('encryptedData' in element && typeof element.encryptedData === 'string') {
+                      try {
+                        const decryptedData = this.decrypt(element.encryptedData) as TaskItem;
+                        tasks.push(decryptedData);
+                      } catch (error) {
+                        console.error('Ignorando tarefa corrompida/antiga:', element);
+                      }
+                    } else if ('uuid' in element && !('encryptedData' in element)) {
+                      // Tarefa antiga salva antes da implementação da criptografia
 
-                  tasks.push(decryptedData);
+                      tasks.push(element as TaskItem);
+                    } else {
+                      console.error('Erro desconhecido');
+                    }
+                  }
                 }
 
                 return tasks;
