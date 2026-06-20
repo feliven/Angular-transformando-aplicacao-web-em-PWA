@@ -7,6 +7,7 @@ import { TimerControl } from './shared/components/timer-control/timer-control';
 import { UpdateService } from './shared/services/update.service';
 import { ConnectivityService } from './shared/services/connectivity.service';
 import { NotificationService } from './shared/services/notification.service';
+import { CacheInspectorService } from './shared/services/cache-inspector.service';
 
 @Component({
   selector: 'app-root',
@@ -18,6 +19,7 @@ export class App implements OnInit {
   private updateService = inject(UpdateService);
   private notificationService = inject(NotificationService);
   private connectivityService = inject(ConnectivityService);
+  private cacheInspectorService = inject(CacheInspectorService);
   private hasUpdate: boolean = false;
 
   constructor() {
@@ -42,6 +44,8 @@ export class App implements OnInit {
     if (this.hasUpdate) {
       console.log('Atualização encontrada durante a inicialização');
     }
+
+    this.cacheInspectorService.checkImagesSoundsCache();
   }
 
   async hasUpdateChecker(): Promise<void> {
