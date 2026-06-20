@@ -1,7 +1,8 @@
 import { isPlatformBrowser } from '@angular/common';
 import { inject, PLATFORM_ID, Service } from '@angular/core';
 import { BehaviorSubject, filter, Observable, switchMap, take } from 'rxjs';
-import type { TaskItem } from '../components/task-manager/ITaskItem';
+import { AES, enc } from 'crypto-js';
+import type { TaskItem } from '../types/types';
 
 @Service()
 export class IndexedDBService {

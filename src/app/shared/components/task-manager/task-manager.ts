@@ -1,9 +1,9 @@
 import { Component, inject, signal, type AfterViewInit } from '@angular/core';
 import { ReactiveFormsModule, Validators, FormBuilder, type FormGroup } from '@angular/forms';
 import { v4 as uuidv4 } from 'uuid';
-import type { TaskItem } from './ITaskItem';
 import { TaskList } from './task-list/task-list';
 import { IndexedDBService } from '../../services/indexed-db.service';
+import type { TaskItem } from '../../types/types';
 
 @Component({
   selector: 'app-task-manager',

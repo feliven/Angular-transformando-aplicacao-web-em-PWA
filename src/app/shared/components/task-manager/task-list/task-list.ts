@@ -1,6 +1,6 @@
 import { Component, input, output } from '@angular/core';
-import type { TaskItem } from '../ITaskItem';
 import { NgClass } from '@angular/common';
+import type { TaskItem } from '../../../types/types';
 
 @Component({
   selector: 'app-task-list',

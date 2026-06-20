@@ -147,7 +147,7 @@ export class TimerControl implements OnInit {
         return;
       }
     } catch (error) {
-      console.error('Erro ao enviar notificação', error);
+      console.error('Erro ao enviar notificação:', error);
     }
   }
 }

@@ -59,7 +59,7 @@ export class NotificationService {
         });
       })
       .catch((error) => {
-        console.error('Erro ao assinar notificações', error);
+        console.error('Erro ao assinar notificações:', error);
       });
   }
 
