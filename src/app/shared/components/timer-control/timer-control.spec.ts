@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TimerControl } from './timer-control';
+import { ServiceWorkerModule } from '@angular/service-worker';
 
 describe('TimerControl', () => {
   let component: TimerControl;
@@ -8,7 +9,7 @@ describe('TimerControl', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TimerControl],
+      imports: [TimerControl, ServiceWorkerModule.register('', { enabled: false })],
     }).compileComponents();
 
     fixture = TestBed.createComponent(TimerControl);

@@ -1,8 +1,10 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal, type OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AudioService } from '../../services/audio.service';
 import { ContextService, type ContextType } from '../../services/context.service';
 import { NotificationService } from '../../services/notification.service';
+import { SwPush } from '@angular/service-worker';
+import type { INotificationMessage } from '../../types/types';
 
 @Component({
   selector: 'app-timer-control',
@@ -10,10 +12,11 @@ import { NotificationService } from '../../services/notification.service';
   templateUrl: './timer-control.html',
   styleUrl: './timer-control.scss',
 })
-export class TimerControl {
+export class TimerControl implements OnInit {
   private contextService = inject(ContextService);
   private audioService = inject(AudioService);
   private notificationService = inject(NotificationService);
+  private swPush = inject(SwPush);
 
   isTimerStarted = signal(false);
   timerInSeconds = signal(30);
@@ -37,6 +40,16 @@ export class TimerControl {
   constructor() {
     effect(() => {
       this.setTimerSecond();
+    });
+  }
+
+  ngOnInit(): void {
+    this.swPush.messages.subscribe((message) => {
+      const notificationMessage = message as INotificationMessage;
+
+      this.notificationService.showNotification(notificationMessage.title, {
+        body: notificationMessage.body,
+      });
     });
   }
 
