@@ -3,10 +3,11 @@ import { inject, PLATFORM_ID, Service } from '@angular/core';
 import { BehaviorSubject, filter, Observable, switchMap, take } from 'rxjs';
 import { AES, enc } from 'crypto-js';
 import type { TaskItem } from '../types/types';
+import { environment } from '../../../environments/environment';
 
 @Service()
 export class IndexedDBService {
-  private readonly secretKey = process.env['SECRET_KEY'];
+  private readonly secretKey = environment.secretKey;
 
   private readonly db$ = new BehaviorSubject<IDBDatabase | null>(null);
   private readonly store = { name: 'task', key: 'uuid' };
