@@ -6,6 +6,8 @@ import type { TaskItem } from '../types/types';
 
 @Service()
 export class IndexedDBService {
+  private readonly secretKey = process.env['SECRET_KEY'];
+
   private readonly db$ = new BehaviorSubject<IDBDatabase | null>(null);
   private readonly store = { name: 'task', key: 'uuid' };
   private dbReady$ = new BehaviorSubject(false);
@@ -38,6 +40,22 @@ export class IndexedDBService {
       this.db$.next(db);
       this.dbReady$.next(true);
     };
+  }
+
+  private encrypt(data: unknown): string {
+    if (this.secretKey) {
+      return AES.encrypt(JSON.stringify(data), this.secretKey).toString();
+    }
+    throw new Error('Chave secreta vazia ou não encontrada');
+  }
+
+  private decrypt(data: string): unknown {
+    if (this.secretKey) {
+      const bytes = AES.decrypt(data, this.secretKey).toString(enc.Utf8);
+
+      return JSON.parse(bytes);
+    }
+    throw new Error('Chave secreta vazia ou não encontrada');
   }
 
   private waitForDB(): Observable<boolean> {
